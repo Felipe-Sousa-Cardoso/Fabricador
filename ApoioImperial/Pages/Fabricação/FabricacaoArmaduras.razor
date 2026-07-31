@@ -1,7 +1,28 @@
-﻿@page "/Fabricação/Armaduras"
+﻿@page "/Fabricacao/Armaduras"
+@using ImperialInfo.Services
+@using ImperialInfo.Tipos
+@using ImperialInfo.Tipos.Fabricação
+@using ImperialInfo.Tipos.Receitas
+@using ApoioImperial.Shared
+@inject FabricadorService FabricadorService
 
-<h3>FabricacaoArmaduras</h3>
+<PageTitle>Fabricação de Armaduras</PageTitle>
+
+<h3>Fabricação de Armaduras</h3>
+
+<FormularioFabricacaoArmadura OnContextoGerado="HandleContextoGerado" />
+
+@if (_resultado is not null)
+{
+    <hr />
+    <ExpositorArmadura resultado="_resultado" />
+}
 
 @code {
+    private ResultadoFabricacao<Armadura>? _resultado;
 
+    private void HandleContextoGerado(ContextoFabricação<ReceitaArmadura> contexto)
+    {
+        _resultado = FabricadorService.FabricarArmadura(contexto);
+    }
 }
