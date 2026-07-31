@@ -1,0 +1,26 @@
+﻿@page "/Fabricacao"
+@using ImperialInfo.Services
+@using ImperialInfo.Tipos.Fabricação
+@using ImperialInfo.Tipos
+@inject FabricadorService FabricadorService
+<PageTitle>Fabricação</PageTitle>
+
+<h1>Fabricação</h1>
+@if (resultado is not null)
+{
+    <ExpositorArmadura resultado="resultado" />
+}
+
+
+
+@code {
+    ResultadoFabricacao<Armadura>? resultado;
+
+    protected override void OnInitialized()
+    {
+        resultado = FabricadorService.teste();
+        Console.WriteLine("Começo");
+    }
+}
+
+

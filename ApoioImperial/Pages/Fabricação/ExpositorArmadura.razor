@@ -1,0 +1,37 @@
+﻿@using ImperialInfo.Tipos
+@using ImperialInfo.Tipos.Fabricação
+
+<div class="alert alert-info" role="alert">
+    @if (resultado.Sucesso)
+    {
+        <p>Fabricação bem-sucedida!</p>
+        <p>Item fabricado: @resultado.Item.Tipo</p>
+        <p>Qualidade: @resultado.Item.Qualidade</p>
+        <p>Descrição: @resultado.Item.Descricao</p>
+        <p>Custo: @resultado.Item.Custo</p>
+        <p>Peso: @resultado.Item.Peso</p>
+        <p>Classe: @resultado.Item.Classe</p>
+        <ul>
+            @foreach (var redução in resultado.Item.ReduçõesDeDano)
+            {
+                <li>@redução.Tipo: @redução.Total</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>Falha na fabricação.</p>
+        <ul>
+            @foreach (var erro in resultado.Erros)
+            {
+                <li>@erro</li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public required ResultadoFabricacao<Armadura> resultado { get; set; }
+}
+
