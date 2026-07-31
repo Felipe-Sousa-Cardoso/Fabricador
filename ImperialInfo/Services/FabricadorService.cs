@@ -12,12 +12,16 @@ public class FabricadorService
 {
     ContextoFabricação<ReceitaArmadura> contextoteste = new ContextoFabricação<ReceitaArmadura>
     {
-        Receita = ReceitasArmaduras.Armadura_de_Couro,
+        Receita = ReceitasArmaduras.Armadura_de_cota_de_malha_completa,
         Materiais = new List<Material>
         {
-            Materiais.Couro_Leve,
-            Materiais.Couro_Leve,
-            Materiais.Linho
+            
+            Materiais.Ferro,
+            Materiais.Aço,
+            Materiais.Linho,
+            Materiais.Couro_Leve
+            
+
         }
     };
 
@@ -42,48 +46,53 @@ public class FabricadorService
             resultado.Erros.Add("Receita inválida");
             return false;
         }
-        foreach (var material in contexto.Receita.Materiais)
+        int indiceMaterial = 0;
+        foreach (var requisito in contexto.Receita.Materiais)
         {
-            if (contexto.Materiais.Count(m=> m.Tipo == material.Tipo) != material.Quantidade)
+            for (int i = 0; i < requisito.Quantidade; i++)
             {
-                string erro = $"Quantidade de {material.Tipo} inválida. Esperado: {material.Quantidade}, Encontrado: {contexto.Materiais.Count(m => m.Tipo == material.Tipo)}";
-                resultado.Erros.Add(erro);
-                return false;
-            }
-        }
-        foreach (var material in contexto.Materiais)
-        {
-            if (!contexto.Receita.Materiais.Any(m => m.Tipo == material.Tipo))
-            {
-                string erro = $"Material {material.Tipo} não é permitido na receita {contexto.Receita.Nome}";
-                resultado.Erros.Add(erro);
-                return false;
+                if (contexto.Materiais[indiceMaterial].Tipo != requisito.Tipo)
+                {
+                    resultado.Erros.Add($"Materiais estão incorretos ou na ordem errada, a ordem esperada é: {string.Join(", ", contexto.Receita.Materiais)}");
+                    return false;
+                }
+
+                indiceMaterial++;
             }
         }
         return true;
     }
     Armadura ProcessarFabricarArmadura(ContextoFabricação<ReceitaArmadura> contexto, ResultadoFabricacao<Armadura> resultado)
     {
+        //Qualidade
         int Qualidade = 0;
         foreach (var material in contexto.Materiais)
         {
             Qualidade += material.Qualidade;
         }
+        //Custo
         int custo = 0;
-        for (int i = 0; i < contexto.Receita.Materiais.Count; i++)
+        int indiceMaterial = 0;
+        foreach (var requisito in contexto.Receita.Materiais)
         {
-            for (int j = 0; j < contexto.Receita.Materiais[i].Quantidade; j++)
+            for (int i = 0; i < requisito.Quantidade; i++)
             {
-                custo += contexto.Materiais[i].Custo*contexto.Receita.Materiais[i].Pack;
+                custo += contexto.Materiais[indiceMaterial].Custo * requisito.Pack;
+
+                indiceMaterial++;
             }
         }
         custo *= contexto.Receita.Custo;
+        //Peso
         float peso = Qualidade * contexto.Receita.Peso;
+        //Reduções de dano
         var reducoes = new List<ReduçãoDeDanoAplicado>();
-        foreach (var reducao in contexto.Receita.ReduçõesDeDano)
-        {
-            reducoes.Add(new ReduçãoDeDanoAplicado(reducao.Tipo, ((int)(Qualidade * reducao.MultiplicadorQualidade))));
-        }
+        reducoes = contexto.Receita.ReduçõesDeDano
+            .Select(r => new ReduçãoDeDanoAplicado(
+                r.Tipo,
+                (int)(Qualidade * r.MultiplicadorQualidade)))
+            .ToList();
+
         Armadura armadura = new Armadura(Qualidade,contexto.Receita.Descrição,custo,peso,contexto.Receita.Classe,reducoes,contexto.Receita.Nome);
 
         return armadura;
