@@ -105,8 +105,11 @@ public class FabricadorService
         {
             var ajustes = propriedade switch
             {
-                PropriedadesEspeciais.Robusto => AplicarRobusto(contexto, reducoes),
+                PropriedadesEspeciais.Robusto => AplicarRobusto(contexto),
                 PropriedadesEspeciais.Acolchoado => AplicarAcolchoado(contexto),
+                PropriedadesEspeciais.Completo => AplicarCompleto(contexto),
+                PropriedadesEspeciais.Reforço => AplicarReforço(contexto),
+                PropriedadesEspeciais.Denso => AplicarDenso(contexto),
                 _ => null
             };
             if (ajustes is null) continue;
@@ -117,25 +120,26 @@ public class FabricadorService
             }
         }
     }
-    List<AjusteRedução> AplicarRobusto(ContextoFabricação<ReceitaArmadura> contexto, List<ReduçãoDeDanoAplicado> reducoes)
-    {
-        int bônus = contexto.Materiais
-            .SelectMany(m => m.Especiais)
-            .Where(e => e.Propriedade == PropriedadesEspeciais.Robusto)
-            .Sum(e => e.Valor);
-        if (bônus <= 0) return [];
-
-        return reducoes.Select(r => new AjusteRedução(r.Tipo, bônus)).ToList();
-    }
+    List<AjusteRedução> AplicarRobusto(ContextoFabricação<ReceitaArmadura> contexto)
+        => AplicarParaTipos(contexto, PropriedadesEspeciais.Robusto, TiposDano.Cortante, TiposDano.Perfurante);
     List<AjusteRedução> AplicarAcolchoado(ContextoFabricação<ReceitaArmadura> contexto)
+        => AplicarParaTipos(contexto, PropriedadesEspeciais.Acolchoado, TiposDano.Contusivo);
+    List<AjusteRedução> AplicarCompleto(ContextoFabricação<ReceitaArmadura> contexto)
+        => AplicarParaTipos(contexto, PropriedadesEspeciais.Completo,
+            TiposDano.Cortante, TiposDano.Perfurante, TiposDano.Contusivo, TiposDano.Magico, TiposDano.Puro);
+    List<AjusteRedução> AplicarReforço(ContextoFabricação<ReceitaArmadura> contexto)
+        => AplicarParaTipos(contexto, PropriedadesEspeciais.Reforço, TiposDano.Cortante, TiposDano.Perfurante);
+    List<AjusteRedução> AplicarDenso(ContextoFabricação<ReceitaArmadura> contexto)
+        => AplicarParaTipos(contexto, PropriedadesEspeciais.Denso, TiposDano.Cortante, TiposDano.Perfurante, TiposDano.Contusivo);
+    List<AjusteRedução> AplicarParaTipos(ContextoFabricação<ReceitaArmadura> contexto, PropriedadesEspeciais propriedade, params TiposDano[] tipos)
     {
         int bônus = contexto.Materiais
             .SelectMany(m => m.Especiais)
-            .Where(e => e.Propriedade == PropriedadesEspeciais.Acolchoado)
+            .Where(e => e.Propriedade == propriedade)
             .Sum(e => e.Valor);
         if (bônus <= 0) return [];
 
-        return [new AjusteRedução(TiposDano.Contusivo, bônus)];
+        return tipos.Select(t => new AjusteRedução(t, bônus)).ToList();
     }
     void AplicarAjuste(List<ReduçãoDeDanoAplicado> reducoes, AjusteRedução ajuste)
     {
