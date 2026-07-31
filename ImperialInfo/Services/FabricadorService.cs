@@ -106,6 +106,7 @@ public class FabricadorService
             var ajustes = propriedade switch
             {
                 PropriedadesEspeciais.Robusto => AplicarRobusto(contexto, reducoes),
+                PropriedadesEspeciais.Acolchoado => AplicarAcolchoado(contexto),
                 _ => null
             };
             if (ajustes is null) continue;
@@ -125,6 +126,16 @@ public class FabricadorService
         if (bônus <= 0) return [];
 
         return reducoes.Select(r => new AjusteRedução(r.Tipo, bônus)).ToList();
+    }
+    List<AjusteRedução> AplicarAcolchoado(ContextoFabricação<ReceitaArmadura> contexto)
+    {
+        int bônus = contexto.Materiais
+            .SelectMany(m => m.Especiais)
+            .Where(e => e.Propriedade == PropriedadesEspeciais.Acolchoado)
+            .Sum(e => e.Valor);
+        if (bônus <= 0) return [];
+
+        return [new AjusteRedução(TiposDano.Contusivo, bônus)];
     }
     void AplicarAjuste(List<ReduçãoDeDanoAplicado> reducoes, AjusteRedução ajuste)
     {
