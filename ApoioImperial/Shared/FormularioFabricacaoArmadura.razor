@@ -69,7 +69,7 @@
                                     var mat = materiaisFiltrados[j];
                                     var matIndex = GetMaterialIndex(mat);
                                     <option value="@matIndex">
-                                        @(mat.Descrição.Split('.')[0]) (Q:@mat.Qualidade C:$@mat.Custo)
+                                        @mat.Nome (Q:@mat.Qualidade C:$@mat.Custo)
                                     </option>
                                 }
                             </select>

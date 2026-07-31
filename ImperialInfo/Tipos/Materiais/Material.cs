@@ -7,6 +7,7 @@ namespace ImperialInfo.Tipos.Materiais;
 public class Material
 {
     public required TiposMaterial Tipo { get; set; }
+    public required string Nome { get; set; }
     public required int Qualidade { get; set; }
     public required int Custo { get; set; }
     public required string Descrição { get; set; }
