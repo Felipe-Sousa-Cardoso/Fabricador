@@ -93,53 +93,87 @@ public class FabricadorService
                 (int)(Qualidade * r.MultiplicadorQualidade)))
             .ToList();
 
-        AplicarPropriedades(contexto, reducoes);
-
         Armadura armadura = new Armadura(Qualidade,contexto.Receita.Descrição,custo,peso,contexto.Receita.Classe,reducoes,contexto.Receita.Nome);
+
+        AplicarPropriedades(contexto, armadura);
 
         return armadura;
     }
-    void AplicarPropriedades(ContextoFabricação<ReceitaArmadura> contexto, List<ReduçãoDeDanoAplicado> reducoes)
+    void AplicarPropriedades(ContextoFabricação<ReceitaArmadura> contexto, Armadura armadura)
     {
         foreach (var propriedade in contexto.Receita.Especiais)
         {
-            var ajustes = propriedade switch
+            switch (propriedade)
             {
-                PropriedadesEspeciais.Robusto => AplicarRobusto(contexto),
-                PropriedadesEspeciais.Acolchoado => AplicarAcolchoado(contexto),
-                PropriedadesEspeciais.Completo => AplicarCompleto(contexto),
-                PropriedadesEspeciais.Reforço => AplicarReforço(contexto),
-                PropriedadesEspeciais.Denso => AplicarDenso(contexto),
-                _ => null
-            };
-            if (ajustes is null) continue;
-
-            foreach (var ajuste in ajustes)
-            {
-                AplicarAjuste(reducoes, ajuste);
+                case PropriedadesEspeciais.Robusto:
+                    AplicarRobusto(contexto, armadura);
+                    break;
+                case PropriedadesEspeciais.Acolchoado:
+                    AplicarAcolchoado(contexto, armadura);
+                    break;
+                case PropriedadesEspeciais.Completo:
+                    AplicarCompleto(contexto, armadura);
+                    break;
+                case PropriedadesEspeciais.Reforço:
+                    AplicarReforço(contexto, armadura);
+                    break;
+                case PropriedadesEspeciais.Denso:
+                    AplicarDenso(contexto, armadura);
+                    break;
             }
         }
     }
-    List<AjusteRedução> AplicarRobusto(ContextoFabricação<ReceitaArmadura> contexto)
-        => AplicarParaTipos(contexto, PropriedadesEspeciais.Robusto, TiposDano.Cortante, TiposDano.Perfurante);
-    List<AjusteRedução> AplicarAcolchoado(ContextoFabricação<ReceitaArmadura> contexto)
-        => AplicarParaTipos(contexto, PropriedadesEspeciais.Acolchoado, TiposDano.Contusivo);
-    List<AjusteRedução> AplicarCompleto(ContextoFabricação<ReceitaArmadura> contexto)
-        => AplicarParaTipos(contexto, PropriedadesEspeciais.Completo,
-            TiposDano.Cortante, TiposDano.Perfurante, TiposDano.Contusivo, TiposDano.Magico, TiposDano.Puro);
-    List<AjusteRedução> AplicarReforço(ContextoFabricação<ReceitaArmadura> contexto)
-        => AplicarParaTipos(contexto, PropriedadesEspeciais.Reforço, TiposDano.Cortante, TiposDano.Perfurante);
-    List<AjusteRedução> AplicarDenso(ContextoFabricação<ReceitaArmadura> contexto)
-        => AplicarParaTipos(contexto, PropriedadesEspeciais.Denso, TiposDano.Cortante, TiposDano.Perfurante, TiposDano.Contusivo);
-    List<AjusteRedução> AplicarParaTipos(ContextoFabricação<ReceitaArmadura> contexto, PropriedadesEspeciais propriedade, params TiposDano[] tipos)
+    void AplicarRobusto(ContextoFabricação<ReceitaArmadura> contexto, Armadura armadura)
     {
-        int bônus = contexto.Materiais
+        int bônus = BônusDaPropriedade(contexto, PropriedadesEspeciais.Robusto);
+        if (bônus <= 0) return;
+        AplicarBônusReduções(armadura.ReduçõesDeDano, bônus, TiposDano.Cortante, TiposDano.Perfurante);
+        ElevarClasse(armadura, ClassesDeArmadura.Media);
+    }
+    void AplicarAcolchoado(ContextoFabricação<ReceitaArmadura> contexto, Armadura armadura)
+    {
+        int bônus = BônusDaPropriedade(contexto, PropriedadesEspeciais.Acolchoado);
+        if (bônus <= 0) return;
+        AplicarBônusReduções(armadura.ReduçõesDeDano, bônus, TiposDano.Contusivo);
+    }
+    void AplicarCompleto(ContextoFabricação<ReceitaArmadura> contexto, Armadura armadura)
+    {
+        int bônus = BônusDaPropriedade(contexto, PropriedadesEspeciais.Completo);
+        if (bônus <= 0) return;
+        AplicarBônusReduções(armadura.ReduçõesDeDano, bônus,
+            TiposDano.Cortante, TiposDano.Perfurante, TiposDano.Contusivo, TiposDano.Magico, TiposDano.Puro);
+        ElevarClasse(armadura, ClassesDeArmadura.Pesada);
+    }
+    void AplicarReforço(ContextoFabricação<ReceitaArmadura> contexto, Armadura armadura)
+    {
+        int bônus = BônusDaPropriedade(contexto, PropriedadesEspeciais.Reforço);
+        if (bônus <= 0) return;
+        AplicarBônusReduções(armadura.ReduçõesDeDano, bônus, TiposDano.Cortante, TiposDano.Perfurante);
+    }
+    void AplicarDenso(ContextoFabricação<ReceitaArmadura> contexto, Armadura armadura)
+    {
+        int bônus = BônusDaPropriedade(contexto, PropriedadesEspeciais.Denso);
+        if (bônus <= 0) return;
+        AplicarBônusReduções(armadura.ReduçõesDeDano, bônus, TiposDano.Cortante, TiposDano.Perfurante, TiposDano.Contusivo);
+    }
+    int BônusDaPropriedade(ContextoFabricação<ReceitaArmadura> contexto, PropriedadesEspeciais propriedade)
+        => contexto.Materiais
             .SelectMany(m => m.Especiais)
             .Where(e => e.Propriedade == propriedade)
             .Sum(e => e.Valor);
-        if (bônus <= 0) return [];
-
-        return tipos.Select(t => new AjusteRedução(t, bônus)).ToList();
+    void AplicarBônusReduções(List<ReduçãoDeDanoAplicado> reducoes, int bônus, params TiposDano[] tipos)
+    {
+        foreach (var tipo in tipos)
+        {
+            AplicarAjuste(reducoes, new AjusteRedução(tipo, bônus));
+        }
+    }
+    void ElevarClasse(Armadura armadura, ClassesDeArmadura mínimo)
+    {
+        if (armadura.Classe < mínimo)
+        {
+            armadura.Classe = mínimo;
+        }
     }
     void AplicarAjuste(List<ReduçãoDeDanoAplicado> reducoes, AjusteRedução ajuste)
     {
