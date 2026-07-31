@@ -49,7 +49,7 @@ public static class Materiais
         },
         PropriedadeEspecifica = new()
         {
-            "Proteção Mágica: Quando utilizado na fabricação de uma peça de armadura, concede +20 em testes de determinação para resistir a efeitos mágicos"
+            "ProteçãoMágica: Testes para resistir a magia são feitos com +20"
         }
     };
 

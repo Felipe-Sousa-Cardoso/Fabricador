@@ -93,7 +93,9 @@ public class FabricadorService
                 (int)(Qualidade * r.MultiplicadorQualidade)))
             .ToList();
 
-        Armadura armadura = new Armadura(Qualidade,contexto.Receita.Descrição,custo,peso,contexto.Receita.Classe,reducoes,contexto.Receita.Nome);
+        var descriçõesEspeciais = contexto.Materiais.SelectMany(m => m.PropriedadeEspecifica).ToList();
+
+        Armadura armadura = new Armadura(Qualidade,contexto.Receita.Descrição,custo,peso,contexto.Receita.Classe,reducoes,contexto.Receita.Nome,descriçõesEspeciais);
 
         AplicarPropriedades(contexto, armadura);
 

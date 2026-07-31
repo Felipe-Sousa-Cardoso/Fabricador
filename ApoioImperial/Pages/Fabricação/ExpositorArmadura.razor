@@ -17,6 +17,16 @@
                 <li>@redução.Tipo: @redução.Total</li>
             }
         </ul>
+        @if (resultado.Item.DescriçõesEspeciais.Count > 0)
+        {
+            <p>Descrições Especiais:</p>
+            <ul>
+                @foreach (var descrição in resultado.Item.DescriçõesEspeciais)
+                {
+                    <li>@descrição</li>
+                }
+            </ul>
+        }
     }
     else
     {

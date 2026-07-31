@@ -8,7 +8,7 @@ namespace ImperialInfo.Tipos;
 public class Armadura
 {
     [SetsRequiredMembers]
-    public Armadura(int qualidade, string? descricao, int custo, float peso, ClassesDeArmadura classe, List<ReduçãoDeDanoAplicado> reduçõesDeDano, string tipo)
+    public Armadura(int qualidade, string? descricao, int custo, float peso, ClassesDeArmadura classe, List<ReduçãoDeDanoAplicado> reduçõesDeDano, string tipo, List<string> descriçõesEspeciais)
     {
         Qualidade = qualidade;
         Descricao = descricao;
@@ -17,6 +17,7 @@ public class Armadura
         Classe = classe;
         ReduçõesDeDano = reduçõesDeDano;
         Tipo = tipo;
+        DescriçõesEspeciais = descriçõesEspeciais;
     }
     public required string Tipo { get; set; }
     public required int Qualidade { get; set; }
@@ -27,5 +28,7 @@ public class Armadura
 
     public required ClassesDeArmadura Classe { get; set; }
 
-    public required List<ReduçãoDeDanoAplicado> ReduçõesDeDano { get; set; } = new List<ReduçãoDeDanoAplicado>();   
+    public required List<ReduçãoDeDanoAplicado> ReduçõesDeDano { get; set; } = new List<ReduçãoDeDanoAplicado>();
+
+    public required List<string> DescriçõesEspeciais { get; set; } = new List<string>();
 }
