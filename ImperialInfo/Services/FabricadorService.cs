@@ -10,25 +10,6 @@ namespace ImperialInfo.Services;
 
 public class FabricadorService
 {
-    ContextoFabricação<ReceitaArmadura> contextoteste = new ContextoFabricação<ReceitaArmadura>
-    {
-        Receita = ReceitasArmaduras.Armadura_de_cota_de_malha_completa,
-        Materiais = new List<Material>
-        {
-            
-            Materiais.Ferro,
-            Materiais.Aço,
-            Materiais.Linho,
-            Materiais.Couro_Leve
-            
-
-        }
-    };
-
-    public ResultadoFabricacao<Armadura> teste()
-    {
-        return FabricarArmadura(contextoteste);
-    }
     public ResultadoFabricacao<Armadura> FabricarArmadura(ContextoFabricação<ReceitaArmadura> contexto)
     {
         ResultadoFabricacao<Armadura> resultado = new ResultadoFabricacao<Armadura>() { Sucesso = false };
@@ -39,13 +20,18 @@ public class FabricadorService
         Armadura armadura = ProcessarFabricarArmadura(contexto, resultado);
         return new ResultadoFabricacao<Armadura> { Sucesso = true , Item = armadura };
     }
-    bool ValidarContexto(ContextoFabricação<ReceitaArmadura> contexto, ResultadoFabricacao<Armadura> resultado)
+    public ResultadoFabricacao<Arma> FabricarArma(ContextoFabricação<ReceitaArma> contexto)
     {
-        if(contexto.Receita is not ReceitaArmadura)
+        ResultadoFabricacao<Arma> resultado = new ResultadoFabricacao<Arma>() { Sucesso = false };
+        if (!ValidarContexto(contexto,resultado))
         {
-            resultado.Erros.Add("Receita inválida");
-            return false;
+            return resultado;
         }
+        Arma arma = ProcessarFabricarArma(contexto);
+        return new ResultadoFabricacao<Arma> { Sucesso = true , Item = arma };
+    }
+    bool ValidarContexto<TReceita, TProduto>(ContextoFabricação<TReceita> contexto, ResultadoFabricacao<TProduto> resultado) where TReceita : Receita
+    {
         int indiceMaterial = 0;
         foreach (var requisito in contexto.Receita.Materiais)
         {
@@ -62,15 +48,17 @@ public class FabricadorService
         }
         return true;
     }
-    Armadura ProcessarFabricarArmadura(ContextoFabricação<ReceitaArmadura> contexto, ResultadoFabricacao<Armadura> resultado)
+    int CalcularQualidade<TReceita>(ContextoFabricação<TReceita> contexto) where TReceita : Receita
     {
-        //Qualidade
-        int Qualidade = 0;
+        int qualidade = 0;
         foreach (var material in contexto.Materiais)
         {
-            Qualidade += material.Qualidade;
+            qualidade += material.Qualidade;
         }
-        //Custo
+        return qualidade;
+    }
+    int CalcularCusto<TReceita>(ContextoFabricação<TReceita> contexto) where TReceita : Receita
+    {
         int custo = 0;
         int indiceMaterial = 0;
         foreach (var requisito in contexto.Receita.Materiais)
@@ -83,9 +71,13 @@ public class FabricadorService
             }
         }
         custo *= contexto.Receita.Custo;
-        //Peso
+        return custo;
+    }
+    Armadura ProcessarFabricarArmadura(ContextoFabricação<ReceitaArmadura> contexto, ResultadoFabricacao<Armadura> resultado)
+    {
+        int Qualidade = CalcularQualidade(contexto);
+        int custo = CalcularCusto(contexto);
         float peso = Qualidade * contexto.Receita.Peso;
-        //Reduções de dano
         var reducoes = new List<ReduçãoDeDanoAplicado>();
         reducoes = contexto.Receita.ReduçõesDeDano
             .Select(r => new ReduçãoDeDanoAplicado(
@@ -100,6 +92,18 @@ public class FabricadorService
         AplicarPropriedades(contexto, armadura);
 
         return armadura;
+    }
+    Arma ProcessarFabricarArma(ContextoFabricação<ReceitaArma> contexto)
+    {
+        int qualidade = CalcularQualidade(contexto);
+        int custo = CalcularCusto(contexto);
+
+        AplicarPropriedades(contexto, ref qualidade);
+
+        var descriçõesEspeciais = contexto.Materiais.SelectMany(m => m.PropriedadeEspecifica).ToList();
+        string dano = contexto.Receita.Dano.Replace("qualidade", qualidade.ToString());
+
+        return new Arma(qualidade, contexto.Receita.Descrição, custo, contexto.Receita.Classe, contexto.Receita.Características, dano, contexto.Receita.Nome, descriçõesEspeciais);
     }
     void AplicarPropriedades(ContextoFabricação<ReceitaArmadura> contexto, Armadura armadura)
     {
@@ -121,6 +125,18 @@ public class FabricadorService
                     break;
                 case PropriedadesEspeciais.Denso:
                     AplicarDenso(contexto, armadura);
+                    break;
+            }
+        }
+    }
+    void AplicarPropriedades(ContextoFabricação<ReceitaArma> contexto, ref int qualidade)
+    {
+        foreach (var propriedade in contexto.Receita.Especiais)
+        {
+            switch (propriedade)
+            {
+                case PropriedadesEspeciais.Denso:
+                    qualidade += BônusDaPropriedade(contexto, PropriedadesEspeciais.Denso);
                     break;
             }
         }
@@ -158,7 +174,7 @@ public class FabricadorService
         if (bônus <= 0) return;
         AplicarBônusReduções(armadura.ReduçõesDeDano, bônus, TiposDano.Cortante, TiposDano.Perfurante, TiposDano.Contusivo);
     }
-    int BônusDaPropriedade(ContextoFabricação<ReceitaArmadura> contexto, PropriedadesEspeciais propriedade)
+    int BônusDaPropriedade<TReceita>(ContextoFabricação<TReceita> contexto, PropriedadesEspeciais propriedade) where TReceita : Receita
         => contexto.Materiais
             .SelectMany(m => m.Especiais)
             .Where(e => e.Propriedade == propriedade)
@@ -192,5 +208,3 @@ public class FabricadorService
         reducoes.Add(new ReduçãoDeDanoAplicado(ajuste.Tipo, ajuste.Bônus));
     }
 }
-
-

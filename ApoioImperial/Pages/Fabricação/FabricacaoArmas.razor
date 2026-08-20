@@ -1,0 +1,28 @@
+@page "/Fabricacao/Armas"
+@using ImperialInfo.Services
+@using ImperialInfo.Tipos
+@using ImperialInfo.Tipos.Fabricação
+@using ImperialInfo.Tipos.Receitas
+@using ApoioImperial.Shared
+@inject FabricadorService FabricadorService
+
+<PageTitle>Fabricação de Armas</PageTitle>
+
+<h3>Fabricação de Armas</h3>
+
+<FormularioFabricacaoArma OnContextoGerado="HandleContextoGerado" />
+
+@if (_resultado is not null)
+{
+    <hr />
+    <ExpositorArma resultado="_resultado" />
+}
+
+@code {
+    private ResultadoFabricacao<Arma>? _resultado;
+
+    private void HandleContextoGerado(ContextoFabricação<ReceitaArma> contexto)
+    {
+        _resultado = FabricadorService.FabricarArma(contexto);
+    }
+}

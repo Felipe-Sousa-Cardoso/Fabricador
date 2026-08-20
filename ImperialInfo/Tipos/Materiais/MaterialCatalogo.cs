@@ -29,7 +29,7 @@ public static class Materiais
         Tipo = TiposMaterial.Metal,
         Nome = "Aço",
         Qualidade = 3,
-        Custo = 20,
+        Custo = 40,
         Descrição = " Material mais escasso e de produção complexa, empregado em equipamentos de alta exigência. Seu custo elevado reflete diretamente na excelência e resistência do item.",
         Especiais = new()
         {
@@ -41,7 +41,7 @@ public static class Materiais
         Tipo = TiposMaterial.Metal,
         Nome = "Luminium",
         Qualidade = 4,
-        Custo = 50,
+        Custo = 100,
         Descrição = " Material mais escasso e de produção complexa, empregado em equipamentos de alta exigência. Seu custo elevado reflete diretamente na excelência e resistência do item.",
         Especiais = new()
         {

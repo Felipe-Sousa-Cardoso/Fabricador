@@ -1,0 +1,172 @@
+@using ImperialInfo.Tipos
+@using ImperialInfo.Tipos.Receitas
+@using ImperialInfo.Tipos.Materiais
+@using ImperialInfo.Tipos.Fabricação
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Fabricar Arma</h5>
+
+        <div class="mb-3">
+            <label class="form-label" for="receita-select">Receita</label>
+            <select id="receita-select" class="form-select"
+                    value="@_receitaIndex"
+                    @onchange="OnReceitaChanged">
+                <option value="-1">Selecione uma receita...</option>
+                @for (int i = 0; i < ReceitasDisponiveis.Count; i++)
+                {
+                    <option value="@i">@ReceitasDisponiveis[i].Nome</option>
+                }
+            </select>
+        </div>
+
+        @if (ReceitaAtual is not null)
+        {
+            <div class="mb-3">
+                <h6>Materiais Necessários</h6>
+                <span class="badge bg-secondary">@ReceitaAtual.Classe</span>
+                <span class="badge bg-warning">Custo Base: @ReceitaAtual.Custo</span>
+
+                @if (ReceitaAtual.Características.Count > 0)
+                {
+                    <div class="mt-1">
+                        @foreach (var característica in ReceitaAtual.Características)
+                        {
+                            <span class="badge bg-dark me-1" title="@DescriçõesCaracterísticasArma.Obter(característica.Tipo)">@característica</span>
+                        }
+                    </div>
+                }
+
+                @if (ReceitaAtual.Especiais.Count > 0)
+                {
+                    <div class="mt-1">
+                        @foreach (var esp in ReceitaAtual.Especiais)
+                        {
+                            <span class="badge bg-dark me-1">@esp</span>
+                        }
+                    </div>
+                }
+            </div>
+
+            int slotIndex = 0;
+
+            foreach (var requisito in ReceitaAtual.Materiais)
+            {
+                var materiaisFiltrados = MateriaisDisponiveis
+                    .Where(m => m.Tipo == requisito.Tipo)
+                    .ToList();
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">
+                        @requisito.Tipo (x@(requisito.Quantidade))
+                        @if (requisito.Pack > 1)
+                        {
+                            <span class="text-muted">· Pack: @requisito.Pack</span>
+                        }
+                    </label>
+                    <div class="d-flex gap-2 flex-wrap">
+                        @for (int i = 0; i < requisito.Quantidade; i++)
+                        {
+                            var currentSlot = slotIndex;
+                            var selectedValue = _selectedMaterialIndices.GetValueOrDefault(currentSlot, -1);
+                            <select class="form-select w-auto" style="min-width: 220px;"
+                                    value="@selectedValue"
+                                    @onchange="(ChangeEventArgs e) => OnMaterialChanged(currentSlot, e.Value)">
+                                <option value="-1">Selecione...</option>
+                                @for (int j = 0; j < materiaisFiltrados.Count; j++)
+                                {
+                                    var mat = materiaisFiltrados[j];
+                                    var matIndex = GetMaterialIndex(mat);
+                                    <option value="@matIndex">
+                                        @mat.Nome (Q:@mat.Qualidade C:$@mat.Custo)
+                                    </option>
+                                }
+                            </select>
+                            slotIndex++;
+                        }
+                    </div>
+                </div>
+            }
+
+            var totalSlots = ReceitaAtual.Materiais.Sum(r => r.Quantidade);
+            var allFilled = _selectedMaterialIndices.Count == totalSlots
+                && _selectedMaterialIndices.Values.All(v => v >= 0);
+
+            <button class="btn btn-primary"
+                    disabled="@(!allFilled)"
+                    @onclick="GerarContexto">
+                Fabricar
+            </button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public IReadOnlyList<ReceitaArma> ReceitasDisponiveis { get; set; } = ReceitasArmas.Todos;
+
+    [Parameter]
+    public IReadOnlyList<Material> MateriaisDisponiveis { get; set; } = Materiais.Todos;
+
+    [Parameter]
+    public EventCallback<ContextoFabricação<ReceitaArma>> OnContextoGerado { get; set; }
+
+    private int _receitaIndex = -1;
+    private ReceitaArma? ReceitaAtual => _receitaIndex >= 0 && _receitaIndex < ReceitasDisponiveis.Count
+        ? ReceitasDisponiveis[_receitaIndex]
+        : null;
+
+    private Dictionary<int, int> _selectedMaterialIndices = new();
+
+    private void OnReceitaChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var index))
+        {
+            _receitaIndex = index;
+            _selectedMaterialIndices.Clear();
+            if (ReceitaAtual is not null)
+            {
+                int totalSlots = ReceitaAtual.Materiais.Sum(r => r.Quantidade);
+                for (int i = 0; i < totalSlots; i++)
+                {
+                    _selectedMaterialIndices[i] = -1;
+                }
+            }
+        }
+    }
+
+    private void OnMaterialChanged(int slotIndex, object? value)
+    {
+        if (int.TryParse(value?.ToString(), out var materialIndex))
+        {
+            _selectedMaterialIndices[slotIndex] = materialIndex;
+        }
+    }
+
+    private int GetMaterialIndex(Material mat)
+    {
+        for (int i = 0; i < MateriaisDisponiveis.Count; i++)
+        {
+            if (ReferenceEquals(MateriaisDisponiveis[i], mat)) return i;
+        }
+        return -1;
+    }
+
+    private async Task GerarContexto()
+    {
+        if (ReceitaAtual is null) return;
+
+        var materiais = _selectedMaterialIndices
+            .OrderBy(kvp => kvp.Key)
+            .Select(kvp => MateriaisDisponiveis[kvp.Value])
+            .ToList();
+
+        var contexto = new ContextoFabricação<ReceitaArma>
+        {
+            Receita = ReceitaAtual,
+            Materiais = materiais
+        };
+
+        await OnContextoGerado.InvokeAsync(contexto);
+    }
+}

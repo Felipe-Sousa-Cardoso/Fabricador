@@ -1,0 +1,50 @@
+@using ImperialInfo.Tipos
+@using ImperialInfo.Tipos.Fabricação
+
+<div class="alert alert-info" role="alert">
+    @if (resultado.Sucesso && resultado.Item is not null)
+    {
+        <p>Fabricação bem-sucedida!</p>
+        <p>Item fabricado: @resultado.Item.Tipo</p>
+        <p>Qualidade: @resultado.Item.Qualidade</p>
+        <p>Descrição: @resultado.Item.Descricao</p>
+        <p>Custo: @resultado.Item.Custo</p>
+        <p>Classe: @resultado.Item.Classe</p>
+        <p>Dano: @resultado.Item.Dano</p>
+        @if (resultado.Item.Características.Count > 0)
+        {
+            <p>Características:</p>
+            <ul>
+                @foreach (var característica in resultado.Item.Características)
+                {
+                    <li>@característica — @DescriçõesCaracterísticasArma.Obter(característica.Tipo)</li>
+                }
+            </ul>
+        }
+        @if (resultado.Item.DescriçõesEspeciais.Count > 0)
+        {
+            <p>Descrições Especiais:</p>
+            <ul>
+                @foreach (var descrição in resultado.Item.DescriçõesEspeciais)
+                {
+                    <li>@descrição</li>
+                }
+            </ul>
+        }
+    }
+    else
+    {
+        <p>Falha na fabricação.</p>
+        <ul>
+            @foreach (var erro in resultado.Erros)
+            {
+                <li>@erro</li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public required ResultadoFabricacao<Arma> resultado { get; set; }
+}
