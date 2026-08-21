@@ -136,6 +136,15 @@ public static class Materiais
         }
     };
 
+    public static readonly Material Madeira_Comum = new()
+    {
+        Tipo = TiposMaterial.Madeira,
+        Nome = "Madeira Comum",
+        Qualidade = 0,
+        Custo = 5,
+        Descrição = "Representa madeiras de árvores comuns."
+    };
+
     public static readonly IReadOnlyList<Material> Todos =
     [
         LigaIntermediária,
@@ -149,6 +158,7 @@ public static class Materiais
         Couro_Leve,
         Couro_Pesado,
         Couro_Elemental,
-        Couro_De_Escamas_Elementais
+        Couro_De_Escamas_Elementais,
+        Madeira_Comum
     ];
 }

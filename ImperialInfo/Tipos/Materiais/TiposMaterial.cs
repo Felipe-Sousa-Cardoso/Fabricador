@@ -8,5 +8,6 @@ public enum TiposMaterial
 {
     Metal,
     Couro,
-    TextelBruto
+    TextelBruto,
+    Madeira
 }
