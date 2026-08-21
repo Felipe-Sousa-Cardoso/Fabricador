@@ -39,11 +39,11 @@ public static class ReceitasArmaduras
         ReduçõesDeDano = new List<ReduçãoDeDanoReceita>
         {
             new ReduçãoDeDanoReceita { Tipo = TiposDano.Cortante, MultiplicadorQualidade = 1f },
-            new ReduçãoDeDanoReceita { Tipo = TiposDano.Contusivo, MultiplicadorQualidade = 1f }
+            new ReduçãoDeDanoReceita { Tipo = TiposDano.Contusivo, MultiplicadorQualidade = 0.5f }
         },
         Custo = 2,
         Peso = 1f,
-        Classe = ClassesDeArmadura.Leve,
+        Classe = ClassesDeArmadura.Media,
          Especiais = new List<PropriedadesEspeciais>
         {
             PropriedadesEspeciais.Robusto,
@@ -77,7 +77,7 @@ public static class ReceitasArmaduras
         ReduçõesDeDano = new List<ReduçãoDeDanoReceita>
         {
             new ReduçãoDeDanoReceita { Tipo = TiposDano.Cortante, MultiplicadorQualidade = 1f },
-            new ReduçãoDeDanoReceita { Tipo = TiposDano.Contusivo, MultiplicadorQualidade = 1f }
+            new ReduçãoDeDanoReceita { Tipo = TiposDano.Contusivo, MultiplicadorQualidade = 0.5f }
         },
         Custo = 2,
         Peso = 1,
@@ -96,8 +96,8 @@ public static class ReceitasArmaduras
         },
         ReduçõesDeDano = new List<ReduçãoDeDanoReceita>
         {
-            new ReduçãoDeDanoReceita { Tipo = TiposDano.Cortante, MultiplicadorQualidade = 1f },
-            new ReduçãoDeDanoReceita { Tipo = TiposDano.Perfurante, MultiplicadorQualidade = 0.5f }
+            new ReduçãoDeDanoReceita { Tipo = TiposDano.Cortante, MultiplicadorQualidade = 2f },
+            new ReduçãoDeDanoReceita { Tipo = TiposDano.Perfurante, MultiplicadorQualidade = 1f }
         },
         Custo = 2,
         Peso = 2,

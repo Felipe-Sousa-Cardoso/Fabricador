@@ -70,7 +70,7 @@ public class FabricadorService
                 indiceMaterial++;
             }
         }
-        custo *= contexto.Receita.Custo;
+        custo *= contexto.Receita.Custo+1;
         return custo;
     }
     Armadura ProcessarFabricarArmadura(ContextoFabricação<ReceitaArmadura> contexto, ResultadoFabricacao<Armadura> resultado)

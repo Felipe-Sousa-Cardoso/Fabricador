@@ -86,7 +86,7 @@ public static class Materiais
         Tipo = TiposMaterial.TextelBruto,
         Nome = "Morlã",
         Qualidade = 2,
-        Custo = 20,
+        Custo = 60,
         Descrição = "Morlã recolhida e processada, muito mais resistente que a lã comum. Serve como base para tecidos e acolchoamentos",
         Especiais = new()
         {
@@ -98,7 +98,7 @@ public static class Materiais
         Tipo = TiposMaterial.Couro,
         Nome = "Couro Leve",
         Qualidade = 1,
-        Custo = 40,
+        Custo = 15,
         Descrição = "Peles de animais comuns, curtidas e processadas.",
     };
     public static readonly Material Couro_Pesado = new()
@@ -106,7 +106,7 @@ public static class Materiais
         Tipo = TiposMaterial.Couro,
         Nome = "Couro Pesado",
         Qualidade = 2,
-        Custo = 60,
+        Custo = 25,
         Descrição = "Couraça de grandes feras e animais resistentes.",
     };
 
