@@ -207,4 +207,25 @@ public class FabricadorService
         }
         reducoes.Add(new ReduçãoDeDanoAplicado(ajuste.Tipo, ajuste.Bônus));
     }
+
+    public ResultadoFabricacao<Escudo> FabricarEscudo(ContextoFabricação<ReceitaEscudo> contexto)
+    {
+        ResultadoFabricacao<Escudo> resultado = new ResultadoFabricacao<Escudo>() { Sucesso = false };
+        if (!ValidarContexto(contexto, resultado))
+        {
+            return resultado;
+        }
+        Escudo escudo = ProcessarFabricarEscudo(contexto);
+        return new ResultadoFabricacao<Escudo> { Sucesso = true, Item = escudo };
+    }
+    Escudo ProcessarFabricarEscudo(ContextoFabricação<ReceitaEscudo> contexto)
+    {
+        int qualidade = CalcularQualidade(contexto);
+        int custo = CalcularCusto(contexto);
+        int defesa = (int)(qualidade * contexto.Receita.MultiplicadorDefesa);
+
+        var descriçõesEspeciais = contexto.Materiais.SelectMany(m => m.PropriedadeEspecifica).ToList();
+
+        return new Escudo(contexto.Receita.Nome, qualidade, contexto.Receita.Descrição, custo, defesa, descriçõesEspeciais);
+    }
 }
