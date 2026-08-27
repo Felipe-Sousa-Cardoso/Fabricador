@@ -176,6 +176,43 @@ public static class ReceitasArmas
         Descrição = "Uma lança maior e mais pesada que uma lança normal, causa mais dano, penetra melhor armadura e requer a 2 mãos para ser utilizada."
     };
 
+    public static readonly ReceitaArma Arco_Simples = new()
+    {
+        Nome = "Arco Simples",
+        Materiais = new List<RequisitosMaterial>
+        {
+            new RequisitosMaterial ( TiposMaterial.Madeira, 1, 5 )
+        },
+        Custo = 1,
+        Classe = ClassesDeArma.Distância,
+        Dano = "(qualidade+1)d8 + 2 Ddes de dano perfurante, com Ddes penetração",
+        DistanciaEfetiva = 12,
+        DistanciaMaxima = 36,
+        Características = new List<CaracterísticaArma>
+        {
+            new CaracterísticaArma ( CaracterísticasArma.DuasMãos )
+        },
+        Descrição = "Um arco simples é utilizado por gerações para caças e combates diversos."
+    };
+    public static readonly ReceitaArma Arco_Longo = new()
+    {
+        Nome = "Arco Longo",
+        Materiais = new List<RequisitosMaterial>
+        {
+            new RequisitosMaterial ( TiposMaterial.Madeira, 1, 9 )
+        },
+        Custo = 2,
+        Classe = ClassesDeArma.Distância,
+        Dano = "(qualidade+1)d12 + 3 Ddes de dano perfurante, com 2 Ddes penetração",
+        DistanciaEfetiva = 20,
+        DistanciaMaxima = 80,
+        Características = new List<CaracterísticaArma>
+        {
+            new CaracterísticaArma ( CaracterísticasArma.DuasMãos )
+        },
+        Descrição = "Um arco bem maior e mais robusto, com uma penetração de armadura e dano muito superior."
+    };
+
     public static readonly IReadOnlyList<ReceitaArma> Todos =
     [
         Espada_Longa,
@@ -187,6 +224,8 @@ public static class ReceitasArmas
         Clava_Grande,
         Martelo,
         Lança_Curta,
-        Lança_Pesada
+        Lança_Pesada,
+        Arco_Simples,
+        Arco_Longo
     ];
 }

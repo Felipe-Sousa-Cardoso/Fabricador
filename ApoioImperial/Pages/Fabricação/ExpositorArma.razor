@@ -10,6 +10,10 @@
         <p>Descrição: @resultado.Item.Descricao</p>
         <p>Custo: @resultado.Item.Custo</p>
         <p>Classe: @resultado.Item.Classe</p>
+        @if (resultado.Item.DistanciaEfetiva.HasValue && resultado.Item.DistanciaMaxima.HasValue)
+        {
+            <p>Distância: @resultado.Item.DistanciaEfetiva/@resultado.Item.DistanciaMaxima</p>
+        }
         <p>Dano: @resultado.Item.Dano</p>
         @if (resultado.Item.Características.Count > 0)
         {

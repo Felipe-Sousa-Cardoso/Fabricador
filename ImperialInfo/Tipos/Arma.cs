@@ -8,7 +8,7 @@ namespace ImperialInfo.Tipos;
 public class Arma
 {
     [SetsRequiredMembers]
-    public Arma(int qualidade, string? descricao, int custo, ClassesDeArma classe, List<CaracterísticaArma> características, string dano, string tipo, List<string> descriçõesEspeciais)
+    public Arma(int qualidade, string? descricao, int custo, ClassesDeArma classe, List<CaracterísticaArma> características, string dano, string tipo, List<string> descriçõesEspeciais, int? distanciaEfetiva = null, int? distanciaMaxima = null)
     {
         Qualidade = qualidade;
         Descricao = descricao;
@@ -18,6 +18,8 @@ public class Arma
         Dano = dano;
         Tipo = tipo;
         DescriçõesEspeciais = descriçõesEspeciais;
+        DistanciaEfetiva = distanciaEfetiva;
+        DistanciaMaxima = distanciaMaxima;
     }
     public required string Tipo { get; set; }
     public required int Qualidade { get; set; }
@@ -30,6 +32,9 @@ public class Arma
     public required List<CaracterísticaArma> Características { get; set; } = new List<CaracterísticaArma>();
 
     public required string Dano { get; set; }
+
+    public int? DistanciaEfetiva { get; set; }
+    public int? DistanciaMaxima { get; set; }
 
     public required List<string> DescriçõesEspeciais { get; set; } = new List<string>();
 }

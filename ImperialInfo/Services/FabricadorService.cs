@@ -103,7 +103,7 @@ public class FabricadorService
         var descriçõesEspeciais = contexto.Materiais.SelectMany(m => m.PropriedadeEspecifica).ToList();
         string dano = contexto.Receita.Dano.Replace("qualidade", qualidade.ToString());
 
-        return new Arma(qualidade, contexto.Receita.Descrição, custo, contexto.Receita.Classe, contexto.Receita.Características, dano, contexto.Receita.Nome, descriçõesEspeciais);
+        return new Arma(qualidade, contexto.Receita.Descrição, custo, contexto.Receita.Classe, contexto.Receita.Características, dano, contexto.Receita.Nome, descriçõesEspeciais, contexto.Receita.DistanciaEfetiva, contexto.Receita.DistanciaMaxima);
     }
     void AplicarPropriedades(ContextoFabricação<ReceitaArmadura> contexto, Armadura armadura)
     {
