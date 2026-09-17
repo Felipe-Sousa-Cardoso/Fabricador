@@ -222,10 +222,10 @@ public class FabricadorService
     {
         int qualidade = CalcularQualidade(contexto);
         int custo = CalcularCusto(contexto);
-        int defesa = (int)(qualidade * contexto.Receita.MultiplicadorDefesa);
+        int bloqueio = qualidade + contexto.Receita.BloqueioAdicional;
 
         var descriçõesEspeciais = contexto.Materiais.SelectMany(m => m.PropriedadeEspecifica).ToList();
 
-        return new Escudo(contexto.Receita.Nome, qualidade, contexto.Receita.Descrição, custo, defesa, descriçõesEspeciais);
+        return new Escudo(contexto.Receita.Nome, qualidade, contexto.Receita.Descrição, custo, bloqueio, descriçõesEspeciais);
     }
 }

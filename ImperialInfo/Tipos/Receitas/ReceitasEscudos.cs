@@ -14,7 +14,7 @@ public static class ReceitasEscudos
             new RequisitosMaterial(TiposMaterial.Metal, 1, 2)
         },
         Custo = 1,
-        MultiplicadorDefesa = 5f
+        BloqueioAdicional = -1
     };
 
     public static readonly ReceitaEscudo Escudo_Reforçado = new()
@@ -27,7 +27,7 @@ public static class ReceitasEscudos
             new RequisitosMaterial(TiposMaterial.Metal, 1, 4)
         },
         Custo = 2,
-        MultiplicadorDefesa = 8f
+        BloqueioAdicional = 0
     };
 
     public static readonly IReadOnlyList<ReceitaEscudo> Todos =
