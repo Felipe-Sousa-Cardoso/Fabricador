@@ -17,7 +17,7 @@ public static class ReceitasArmas
         },
         Custo = 2,
         Classe = ClassesDeArma.Espada,
-        Dano = "(qualidade)d10 +2 Dfor de dano cortante, com (qualidade+Dfor) penetração",
+        Dano = "(qualidade)d10 + Dfor de dano cortante, com (qualidade) penetração",
         Características = new List<CaracterísticaArma>
         {
             new CaracterísticaArma ( CaracterísticasArma.Pesada )
@@ -92,6 +92,24 @@ public static class ReceitasArmas
             new CaracterísticaArma ( CaracterísticasArma.Leve )
         },
         Descrição = "Um cabo robusto com uma lâmina pesada na ponta, pode ser lâmina única ou dupla dependendo do modelo, se diferencia de um machado de trabalho por ser mais leve e com corte melhor."
+    };
+    public static readonly ReceitaArma Machado_Grande = new()
+    {
+        Nome = "Machado Grande",
+        Materiais = new List<RequisitosMaterial>
+        {
+            new RequisitosMaterial ( TiposMaterial.Metal, 1, 4 ),
+            new RequisitosMaterial ( TiposMaterial.Madeira, 1, 2 )
+        },
+        Custo = 2,
+        Classe = ClassesDeArma.Machado,
+        Dano = "d12 +(qualidade+1)Dfor de dano cortante, com (qualidade*2) penetração",
+        Características = new List<CaracterísticaArma>
+        {
+            new CaracterísticaArma ( CaracterísticasArma.Pesada ),
+            new CaracterísticaArma ( CaracterísticasArma.DuasMãos )
+        },
+        Descrição = "Um machado de lâmina grande e cabeça pesada, com cabo longo que exige ser empunhado com as duas mãos para ser manejado com eficácia. Projetado sobretudo para cortes poderosos, é capaz de abrir armaduras e defesas com seus golpes."
     };
     public static readonly ReceitaArma Clava = new()
     {
@@ -220,6 +238,7 @@ public static class ReceitasArmas
         Espada_Curta,
         Machadinha,
         Machado_Combate,
+        Machado_Grande,
         Clava,
         Clava_Grande,
         Martelo,
